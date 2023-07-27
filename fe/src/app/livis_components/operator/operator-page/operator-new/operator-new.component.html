@@ -1,0 +1,167 @@
+<div class="operator-panel mt-5 ">
+    <div class="col-md-12 col-sm-12 row justify-content-between mt-3 mb-1">
+        <div class="col-md-4 row col-sm-12 " style="margin-left: 2% !important;">
+            <div class="col-md-6 part-name row">
+                <span style="align-self: flex-end;">
+
+                    Part Name : &nbsp;
+                    {{selected_part_item ? selected_part_item : '--'}}
+                </span>
+            </div>
+        </div>
+        <!-- <div class="col-md-4 row justify-content-end">
+            <div class="col-md-3">
+                <button class="btn btn-primary inspect-button invisible" id="inspect_btn">Inspect</button>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-danger operator-button invisible" id="stop_process_btn">Stop Process</button>
+            </div>
+        </div> -->
+    </div>
+    <div class="col-md-12 row main-box" >
+        
+        <div class="col-md-9  col-lg-9 col-sm-12 camera-shots row" id="camera_layout_wrap" style="position:relative !important">
+
+            <div  class="status-box">
+              <div class="status-status-box">
+
+                <span *ngIf="inspection_status == 'Accepted'" style="background: #20BA07 !important ; color:white !important">Accepted</span>
+                <span  *ngIf="inspection_status == 'Rejected'" style="background: red !important ; color:white !important">Rejected</span>
+              </div>
+              <div *ngIf="defect_list">
+
+                <div  class="defect-under-status row" *ngFor="let defect of defect_list">
+                  <span class=" col-md-12 col-md-12 status-defect"> {{defect}} </span>
+                  
+                </div> 
+              </div>
+            </div>
+            <div  class="live-box">
+                <span><img src="../../../../../assets/img/live.png"     width= "100%" alt=""></span>
+            </div>
+            <div  class="fullscreen-box" (click)="goFullScreen()" id="full-screen-icon-open">
+                <span><img src="../../../../../assets/img/fullscreen.png"     width= "35px" alt=""></span>
+            </div>
+            <div  class="fullscreen-box invisible" (click)="exitFullScreen()" id="full-screen-icon-close">
+
+            <span><img src="../../../../../assets/img/fullscreen.png" class=""     width= "35px" alt=""></span>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 col-lg-3">
+          <div class="col-md-12 row justify-content-end" style="margin-block: 10px !important;">
+                <button class="btn btn-primary livis-start-btn invisible" (click)="getinspection()" id="inspect_btn">Inspect</button>
+         
+                <button class="btn btn-danger operator-button invisible" id="stop_process_btn" (click)="processEndForm()">Stop Process</button>
+        </div>
+            <div class="right-sidebar-container">
+            <mat-accordion>
+                <mat-expansion-panel [expanded]="true">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title  class="livis-heading insp-count"> Inspection Count </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <mat-divider></mat-divider>
+
+                  <div class="row slider-dropdown">
+                        
+                      <span class="right-aligner col-md-12 col-md-12 units"> Units </span>
+                      <span class="right-aligner col-md-12 value-count">{{acceptedCount ? acceptedCount : 0 }}</span>
+                      <span class="right-aligner col-md-12 accepted status-dropdown-count"> Accepted </span>
+                      <!-- <mat-divider class="right-aligner divider-width"></mat-divider> -->
+                      <div></div>
+                      <span class="right-aligner col-md-12 units"> Units </span>                  
+                      <span class="right-aligner col-md-12 value-count">{{rejectedCount ? rejectedCount : 0}}</span>
+                      <span class="right-aligner col-md-12  rejected status-dropdown-count" > Rejected </span>
+                      <!-- <mat-divider  class="right-aligner divider-width"></mat-divider> -->
+                        <div></div>
+
+                      <span class="right-aligner col-md-12 value-count">{{totalCount ? totalCount : 0}}</span>
+                      <span class="right-aligner col-md-12 total-units">
+                          Total Count (Units)
+                        </span>
+
+                    </div>
+                </mat-expansion-panel>
+    
+                <!-- 2nd Expansion -->
+         
+              </mat-accordion>
+           
+              <!-- <mat-accordion>
+                <mat-expansion-panel [expanded]="true">
+                  <mat-expansion-panel-header >
+                    <mat-panel-title class="livis-heading insp-count"> Stud Count </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <mat-divider></mat-divider>
+                  <div class="row" *ngIf="stud_count">
+                            <span class=" col-md-12 col-md-12 defect-list " *ngFor="let defect of stud_count | keyvalue"> {{defect.key | livisUnderscorePipe}} : {{defect.value}} </span>
+
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion> -->
+
+              <mat-accordion>
+                <mat-expansion-panel [expanded]="true">
+                  <mat-expansion-panel-header >
+                    <mat-panel-title class="livis-heading insp-count"> Inspection Detail </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <mat-divider></mat-divider>
+                  <div class="row" *ngIf="defect_list">
+                            <span class="right-aligner col-md-12 col-md-12 defect-list" *ngFor="let defect of defect_list"> {{defect}} </span>
+
+                   
+                   
+                    
+
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal " id="process-start-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" i18n="@@addPar">{{'Select Part' }}</h4>
+          <div class="livis-box-cross-icon">
+            <button mat-button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                <i class="material-icons">clear</i>
+            </button>
+          </div>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="processStartForm" novalidate (ngSubmit)="startProcess(processStartForm)">
+                <div class="row">
+                        <mat-form-field class="col-md-12">
+                            <mat-select
+                              (selectionChange)="partChange($event.value)"
+                              placeholder="{{ 'Select Model'  }} *"
+                              formControlName="part_name"
+                            >
+                              <mat-option *ngFor="let part of part_list" [value]="part">{{part}}</mat-option>
+                            </mat-select>
+              
+                            <mat-error
+                              *ngIf="
+                                isSubmitted && !processStartForm.controls.model.valid
+                              "
+                              class="text-danger"
+                              i18n="@@partNumberRequired"
+                            >
+                              {{ "Model is required"  }} .
+                            </mat-error>
+                          </mat-form-field>
+                </div> 
+                <div class="modal-footer">
+                    <button mat-raised-button type="submit" class="btn btn-livis-secondary" data-dismiss="modal" aria-hidden="true">{{'Cancel' }}</button>
+                    <button mat-raised-button type="submit" class="btn btn-livis-primary" i18n="@@submit">{{'Submit' }}</button>
+                </div>
+            </form>    
+        </div>
+       
+      </div>
+    </div>
+  </div>
